@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Active Directory Basics
+# Active Directory Basics - Active Directory 基础
 
 > [TryHackMe | Active Directory Basics](https://tryhackme.com/room/winadbasics)
 >
@@ -273,7 +273,7 @@ Organizational Unit
 
 所以绕开 Active Directory 管理组件，直接使用 Powershell 进行 Active Directory 用户密码重置
 
-```powershell
+```powershell title="Windows PowerShell (As Phillip)"
 PS C:\Users\phillip> Set-ADAccountPassword sophie -Reset -NewPassword (Read-Host -AsSecureString -Prompt 'New Password') -Verbose
 
 New Password: *********
@@ -283,7 +283,7 @@ VERBOSE: Performing the operation "Set-ADAccountPassword" on target "CN=Sophie,O
 
 如果不希望 Sophie 继续使用我们知道的密码，因此我们还可以使用以下命令在下次登录时强制重置密码：
 
-```powershell
+```powershell title="Windows PowerShell (as Phillip)"
 PS C:\Users\phillip> Set-ADUser -ChangePasswordAtLogon $true -Identity sophie -Verbose
 
 VERBOSE: Performing the operation "Set" on target "CN=Sophie,OU=Sales,OU=THM,DC=thm,DC=local".
@@ -483,7 +483,7 @@ GPO 通过名为 `SYSVOL` 的网络共享分发到网络，该共享存储在 DC
 
 一旦对任何 GPO 进行了更改，计算机可能需要长达 2 个小时的时间才能跟上。如果要强制任何特定计算机立即同步其 GPO，可以在所需计算机上运行以下命令：
 
-```powershell
+```powershell title="powershell"
 PS C:\> gpupdate /force
 ```
 

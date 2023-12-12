@@ -16,25 +16,25 @@
 >
 > This room will introduce the basic concepts and functionality provided by Active Directory.
 
-## [Breaching Active Directory](https://tryhackme.com/room/breachingad) - Active Directory 突破
+## [Breaching Active Directory](./Breaching-Active-Directory) - Active Directory 突破
 
 > 该网络环境涵盖可用于获取第一套 Active Directory 凭据的技术和工具，这些凭据可用于枚举 AD。
 >
 > This network covers techniques and tools that can be used to acquire that first set of AD credentials that can then be used to enumerate AD.
 
-## [Enumerating Active Directory](https://tryhackme.com/room/adenumeration) - Active Directory 列举
+## [Enumerating Active Directory](./Enumerating-Active-Directory) - Active Directory 列举
 
 > 本房间涵盖各种 Active Directory 枚举技术、使用案例以及缺点。
 >
 > This room covers various Active Directory enumeration techniques, their use cases as well as drawbacks.
 
-## Lateral Movement and Pivoting - 横向移动和旋转
+## [Lateral Movement and Pivoting](./Lateral-Movement-and-Pivoting) - 横向移动和枢纽
 
 > 了解在 Windows 网络中横向移动的常用技术。
 >
 > Learn about common techniques used to move laterally across a Windows network.
 
-## Exploiting Active Directory - Active Directory 利用
+## [Exploiting Active Directory](./Exploiting-Active-Directory) - Active Directory 利用
 
 > 学习常见的 AD 利用技术，让你在 AD 环境中达成目标。
 >

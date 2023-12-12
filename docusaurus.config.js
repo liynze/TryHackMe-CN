@@ -30,8 +30,8 @@ const config = {
     // useful metadata like html lang. For example, if your site is Chinese, you
     // may want to replace "en" with "zh-Hans".
     i18n: {
-        defaultLocale: 'en',
-        locales: ['en'],
+        defaultLocale: 'zh-Hans',
+        locales: ['zh-Hans'],
     },
 
     presets: [
@@ -98,6 +98,7 @@ const config = {
                 copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
             },
             prism: {
+                additionalLanguages: ['powershell', 'php', 'ini', 'json'],
                 theme: prismThemes.github,
                 darkTheme: prismThemes.dracula,
             },

@@ -2,11 +2,11 @@
 sidebar_position: 3
 ---
 
-# Enumerating Active Directory
+# Enumerating Active Directory - Active Directory 列举
 
 > [TryHackMe | Enumerating Active Directory](https://tryhackme.com/room/adenumeration)
 >
-> Updated in 2023-12-
+> Updated in 2023-12-10
 >
 > 该房间涵盖各种 Active Directory 枚举技术、使用案例和缺点。
 >
@@ -109,13 +109,13 @@ Set-DnsClientServerAddress -InterfaceIndex $index -ServerAddresses $dnsip
 
 当然，"Ethernet" 指的是与 TryHackMe 网络连接的任何接口。我们可以运行以下程序来验证 DNS 是否正常工作：
 
-```powershell
+```shell title="Command Prompt"
 C:\> nslookup za.tryhackme.com
 ```
 
 现在应该解析到 DC IP，因为这是 FQDN 的托管地址。现在 DNS 已经正常工作，我们终于可以测试我们的凭据了。我们可以使用以下命令强制基于网络的 SYSVOL 目录列表：
 
-```powershell
+```shell title="Command Prompt"
 C:\Tools>dir \\za.tryhackme.com\SYSVOL\
  Volume in drive \\za.tryhackme.com\SYSVOL is Windows
  Volume Serial Number is 1634-22A9
@@ -410,7 +410,7 @@ CMD 有一个内置命令可以用来枚举关于 AD 的信息，就是 `net` �
 
 我们可以使用 `net` 命令并通过 `user` 子选项列出 AD 域中的所有用户：
 
-```shell
+```shell title="Command Prompt"
 C:\>net user /domain
 The request will be processed at a domain controller for domain za.tryhackme.com
 
@@ -431,7 +431,7 @@ The command completed successfully.
 
 这将为我们返回所有 AD 用户，并有助于确定域的规模以策划进一步的攻击。我们还可以使用这个子选项来枚举关于单个用户账户的更详细信息：
 
-```shell
+```shell title="Command Prompt"
 C:\>net user zoe.marshall /domain
 The request will be processed at a domain controller for domain za.tryhackme.com
 
@@ -472,7 +472,7 @@ The command completed successfully.
 
 我们可以使用 `net` 命令并通过 `group` 子选项枚举域中的组：
 
-```shell
+```shell title="Command Prompt"
 C:\>net group /domain
 The request will be processed at a domain controller for domain za.tryhackme.com
 
@@ -497,7 +497,7 @@ The command completed successfully.
 
 这些信息可以帮助我们找到特定的组，以便执行目标。我们还可以通过在同一命令中指定组来枚举更多细节，比如成员身份：
 
-```shell
+```shell title="Command Prompt"
 C:\>net group "Tier 1 Admins" /domain
 The request will be processed at a domain controller for domain za.tryhackme.com
 
@@ -517,7 +517,7 @@ The command completed successfully.
 
 我们可以使用 `net` 命令并通过 `accounts` 子选项枚举域的密码策略：
 
-```shell
+```shell title="Command Prompt"
 C:\>net accounts /domain
 The request will be processed at a domain controller for domain za.tryhackme.com
 
@@ -645,7 +645,7 @@ PowerShell 是命令提示符的升级版。微软于 2006 年首次发布了它
 
 我们可以使用 Get-ADUser cmdlet 枚举 AD 用户：
 
-```powershell
+```powershell title="SSH PowerShell"
 PS C:\> Get-ADUser -Identity gordon.stevens -Server za.tryhackme.com -Properties *
 
 AccountExpirationDate                :
@@ -668,7 +668,7 @@ DistinguishedName                    : CN=gordon.stevens,OU=Consulting,OU=People
 
 对于大多数这些 cmdlet，我们还可以使用 `-Filter` 参数来更精确地控制枚举，并使用 `Format-Table` cmdlet 来整齐地显示结果，如下所示：
 
-```powershell
+```powershell title="SSH PowerShell"
 PS C:\> Get-ADUser -Filter 'Name -like"*stevens"' -Server za.tryhackme.com | Format-Table Name,SamAccountName -A
 
 Name             SamAccountName
@@ -684,7 +684,7 @@ gordon.stevens   gordon.stevens
 
 我们可以使用 Get-ADGroup cmdlet 枚举 AD 组：
 
-```powershell
+```powershell title="SSH PowerShell"
 PS C:\> Get-ADGroup -Identity Administrators -Server za.tryhackme.com
 
 
@@ -700,7 +700,7 @@ SID               : S-1-5-32-544
 
 我们还可以使用 Get-ADGroupMember cmdlet 枚举组成员资格：
 
-```powershell
+```powershell title="SSH PowerShell"
 PS C:\> Get-ADGroupMember -Identity Administrators -Server za.tryhackme.com
 
 
@@ -724,7 +724,7 @@ SID               : S-1-5-21-3330634377-1326264276-632209373-500
 
 使用 `Get-ADObject` cmdlet 可以执行更通用的搜索来查找任何 AD 对象。例如，如果我们要查找在特定日期之后更改的所有 AD 对象：
 
-```powershell
+```powershell title="SSH PowerShell"
 PS C:\> $ChangeDate = New-Object DateTime(2022, 02, 28, 12, 00, 00)
 PS C:\> Get-ADObject -Filter 'whenChanged -gt $ChangeDate' -includeDeletedObjects -Server za.tryhackme.com
 
@@ -743,7 +743,7 @@ ObjectGUID        : b10fe384-bcce-450b-85c8-218e3c79b30f
 
 如果我们想要执行密码喷洒攻击但又不想锁定账户，我们可以使用这个命令来枚举 badPwdCount 大于 0 的账户，避免在我们的攻击中使用这些账户：
 
-```powershell
+```powershell title="SSH PowerShell"
 PS C:\> Get-ADObject -Filter 'badPwdCount -gt 0' -Server za.tryhackme.com
 PS C:\>
 ```
@@ -754,7 +754,7 @@ PS C:\>
 
 我们可以使用 `Get-ADDomain` 来检索关于特定域的特定信息：
 
-```powershell
+```powershell title="SSH PowerShell"
 PS C:\> Get-ADDomain -Server za.tryhackme.com
 
 AllowedDNSSuffixes                 : {}
@@ -774,7 +774,7 @@ AD-RSAT cmdlet 的好处之一是，一些甚至允许你创建新的或修改�
 
 不过，我们将通过使用 `Set-ADAccountPassword` cmdlet 强制更改我们的 AD 用户密码来展示一个例子：
 
-```powershell
+```powershell title="SSH PowerShell"
 PS C:\> Set-ADAccountPassword -Identity gordon.stevens -Server za.tryhackme.com -OldPassword (ConvertTo-SecureString -AsPlaintext "old" -force) -NewPassword (ConvertTo-SecureString -AsPlainText "new" -Force)
 ```
 
@@ -1071,7 +1071,7 @@ Sharphound.exe --CollectionMethods <Methods> --Domain za.tryhackme.com --Exclude
 
 使用前一个任务中的 SSH PowerShell 会话，将 Sharphound 二进制文件复制到你的 AD 用户的文档目录中：
 
-```powershell
+```powershell title="SSH PowerShell"
 PS C:\> copy C:\Tools\Sharphound.exe ~\Documents\
 PS C:\> cd ~\Documents\
 PS C:\Users\gordon.stevens\Documents>
@@ -1079,7 +1079,7 @@ PS C:\Users\gordon.stevens\Documents>
 
 我们将使用 All 和 Session 收集方法来运行 Sharphound：
 
-```powershell
+```powershell title="SSH PowerShell"
 PS C:\Users\gordon.stevens\Documents\>SharpHound.exe --CollectionMethods All --Domain za.tryhackme.com --ExcludeDCs
 2022-03-16T19:11:41.2898508+00:00|INFORMATION|Resolved Collection Methods: Group, LocalAdmin, GPOLocalGroup, Session, LoggedOn, Trusts, ACL, Container, RDP, ObjectProps, DCOM, SPNTargets, PSRemote
 2022-03-16T19:11:41.3056683+00:00|INFORMATION|Initializing SharpHound at 7:11 PM on 3/16/2022
@@ -1095,7 +1095,7 @@ Closing writers
 
 Sharphound 的枚举大约需要 1 分钟时间。在较大的组织中，这可能需要更长的时间，甚至第一次执行可能需要几个小时。完成后，你会在执行 Sharphound 的相同文件夹中看到一个带有时间戳的 ZIP 文件。
 
-```powershell
+```powershell title="SSH PowerShell"
 PS C:\Users\gordon.stevens\Documents> dir
 
     Directory: C:\Users\gordon.stevens\Documents
@@ -1113,8 +1113,7 @@ Mode                LastWriteTime         Length Name
 
 正如之前提到的，Bloodhound 是一个 GUI 工具，允许我们导入 Sharphound 捕获的数据，并将其可视化为攻击路径。Bloodhound 使用 Neo4j 作为其后端数据库和图形系统。Neo4j 是一个图数据库管理系统。如果你正在使用 AttackBox，你可以使用 Dock 中的红色 Bloodhound 图标来启动它。在其他情况下，请确保 Bloodhound 和 Neo4j 已经安装并配置在你的攻击机器上。无论哪种情况，了解背后发生的事情都是很好的。在我们开始使用 Bloodhound 之前，我们需要加载 Neo4j：
 
-```shell
-
+```shell title="Command Prompt"
 thm@thm:~# neo4j console start
 Active database: graph.db
 Directories in use:
