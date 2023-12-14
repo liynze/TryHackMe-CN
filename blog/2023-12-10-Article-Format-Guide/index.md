@@ -26,10 +26,6 @@ tags: []
 
 <summary> 具体操作步骤 </summary>
 
-<div style={{textAlign:'center'}}>
-
-</div>
-
 </details>
 ```
 

@@ -40,13 +40,13 @@
 >
 > Learn common AD exploitation techniques that can allow you to reach your goal in an AD environment.
 
-## Persisting Active Directory - Active Directory 持久化
+## [Persisting Active Directory](./Persisting-Active-Directory) - Active Directory 持久化
 
 > 了解常见的 Active Directory 持久性技术，这些技术可在入侵后使用，以确保蓝队无法在红队演习中将您踢出。
 >
 > Learn about common Active Directory persistence techniques that can be used post-compromise to ensure the blue team will not be able to kick you out during a red team exercise.
 
-## Credentials Harvesting - 凭据收集
+## [Credentials Harvesting](./Credentials-Harvesting) - 凭据收集
 
 > 将现代环境中采用的身份验证模型，应用到红色团队方法中。
 >
