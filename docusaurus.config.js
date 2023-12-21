@@ -16,12 +16,12 @@ const config = {
     url: 'https://tryhackmyoffsecbox.github.io/',
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
-    baseUrl: '/TryHackMe-CN',
+    baseUrl: '/TryHackMe-CN/',
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
     organizationName: 'WSS-Studio', // Usually your GitHub org/user name.
-    projectName: 'tryhackne-cn', // Usually your repo name.
+    projectName: 'TryHackMe-CN', // Usually your repo name.
 
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
