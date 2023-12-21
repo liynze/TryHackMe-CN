@@ -9,7 +9,7 @@ sidebar_position: 7
 >
 > Updated in 2023-12-14
 >
-> 将现代环境中采用的身份验证模型，应用到红色团队方法中。
+> 将现代环境中采用的身份验证模型，应用到红队方法中。
 >
 > Apply current authentication models employed in modern environments to a red team approach.
 

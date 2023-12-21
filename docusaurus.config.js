@@ -44,14 +44,14 @@ const config = {
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl:
-                        'https://github.com/CTF-Archives/Tryhackme-CN/tree/main/',
+                        'https://github.com/CTF-Archives/Tryhackme-CN/edit/main/',
                 },
                 blog: {
                     showReadingTime: true,
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl:
-                        'https://github.com/CTF-Archives/Tryhackme-CN/tree/main/',
+                        'https://github.com/CTF-Archives/Tryhackme-CN/edit/main/',
                 },
                 theme: {
                     customCss: './src/css/custom.css',
@@ -95,12 +95,17 @@ const config = {
             },
             footer: {
                 style: 'dark',
-                copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+                copyright: `Copyright © ${new Date().getFullYear()} Tryhackme CN Mirror Built with Docusaurus.`,
             },
             prism: {
                 additionalLanguages: ['powershell', 'php', 'ini', 'json'],
                 theme: prismThemes.github,
                 darkTheme: prismThemes.dracula,
+            },
+            docs: {
+                sidebar: {
+                    autoCollapseCategories: true,
+                },
             },
         }),
 };

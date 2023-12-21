@@ -1,4 +1,8 @@
-# Compromising Active Directory
+---
+sidebar_position: 12
+---
+
+# Compromising Active Directory - 妥协活动目录
 
 > [TryHackMe | Compromising Active Directory](https://tryhackme.com/module/hacking-active-directory)
 >

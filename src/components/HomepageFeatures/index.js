@@ -4,17 +4,16 @@ import styles from './styles.module.css';
 
 const FeatureList = [
   {
-    title: 'Easy to Use',
+    title: '方便阅读',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        不同于 Tryhackme 的英文原文，借助 ChatGPT 的力量，通过将 Tryhackme 教程的英文原文翻译为中文，得到更为流畅的学习体验
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: '专注于更重要的事情',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
@@ -24,7 +23,7 @@ const FeatureList = [
     ),
   },
   {
-    title: 'Powered by React',
+    title: '云托管',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
